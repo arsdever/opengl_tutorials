@@ -1,5 +1,7 @@
 cmake_minimum_required (VERSION 3.10)
 
+set (CMAKE_CXX_STANDARD 17)
+
 project (opengl_trainings)
 
 include(/Users/arsdever/vcpkg/scripts/buildsystems/vcpkg.cmake) 
