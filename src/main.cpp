@@ -9,6 +9,12 @@
 static const int WIDTH = 640;
 static const int HEIGHT = 480;
 
+void renderScene()
+{
+    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+}
+
 int main(int argc, char **argv)
 {
     glfwInit();
@@ -37,6 +43,8 @@ int main(int argc, char **argv)
     glViewport(0, 0, WIDTH, HEIGHT);
     while (!glfwWindowShouldClose(window))
     {
+        renderScene();
+
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
