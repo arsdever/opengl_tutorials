@@ -1,21 +1,21 @@
 #pragma once
 
 #include <geometry.h>
+#include <list>
 
-class sphere : public geometry
+class quad : public geometry
 {
 public:
-    sphere(unsigned segments, unsigned resolution);
+    quad();
 
     virtual const std::list<vertex>& vertices() const override;
     virtual const std::list<unsigned long>& indices() const override;
+    virtual unsigned long vertex_count() const override;
 
 private:
-    void init();
+    virtual void init() override;
 
 private:
-    unsigned _segments;
-    unsigned _resolution;
     std::list<vertex> _vertices;
     std::list<unsigned long> _indices;
 };

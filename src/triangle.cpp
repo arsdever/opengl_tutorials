@@ -15,6 +15,11 @@ const std::list<unsigned long> &triangle::indices() const
     return _indices;
 }
 
+unsigned long triangle::vertex_count() const
+{
+    return 3;
+}
+
 void triangle::init()
 {
     if (_initialized)

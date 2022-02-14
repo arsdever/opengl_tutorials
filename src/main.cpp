@@ -10,11 +10,12 @@
 #include <helper.h>
 
 #include <triangle.h>
+#include <quad.h>
 
 static constexpr int WIDTH = 640;
 static constexpr int HEIGHT = 480;
 
-static const triangle t;
+static const quad t;
 
 #define SHADER(prog) #prog
 
@@ -141,7 +142,7 @@ int main(int argc, char **argv)
 
         glUseProgram(shaderProgram);
         glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLE_STRIP, 0, 3);
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, t.indices().size());
 
         glfwSwapBuffers(window);
         glfwPollEvents();

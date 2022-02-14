@@ -9,9 +9,10 @@ public:
 
     virtual const std::list<vertex> &vertices() const override;
     virtual const std::list<unsigned long> &indices() const override;
+    virtual unsigned long vertex_count() const override;
 
 private:
-    void init();
+    virtual void init() override;
 
 private:
     bool _initialized { false };
