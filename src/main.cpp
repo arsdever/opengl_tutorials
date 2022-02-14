@@ -15,9 +15,7 @@
 static constexpr int WIDTH = 640;
 static constexpr int HEIGHT = 480;
 
-static const quad t;
-
-#define SHADER(prog) #prog
+static const triangle t;
 
 void renderScene()
 {
@@ -121,7 +119,12 @@ int main(int argc, char **argv)
                   {
                     buffer.push_back(vertex.x);
                     buffer.push_back(vertex.y);
-                    buffer.push_back(vertex.z); });
+                    buffer.push_back(vertex.z);
+                    buffer.push_back(vertex.r);
+                    buffer.push_back(vertex.g);
+                    buffer.push_back(vertex.b);
+                    buffer.push_back(vertex.a);
+                    });
 
     unsigned int VBO;
     glGenBuffers(1, &VBO);
@@ -132,8 +135,10 @@ int main(int argc, char **argv)
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, buffer.size() * sizeof(double), buffer.data(), GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_DOUBLE, GL_FALSE, 3 * sizeof(double), (void *)0);
+    glVertexAttribPointer(0, 3, GL_DOUBLE, GL_FALSE, 7 * sizeof(double), (void *)0);
+    glVertexAttribPointer(1, 4, GL_DOUBLE, GL_FALSE, 7 * sizeof(double), (void *)(3 * sizeof(double)));
     glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
 
     glViewport(0, 0, WIDTH, HEIGHT);
     while (!glfwWindowShouldClose(window))
