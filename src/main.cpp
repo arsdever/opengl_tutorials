@@ -6,16 +6,18 @@
 
 #include <iostream>
 #include <vector>
+#include <list>
 
 #include <helper.h>
 
+#include <entity.h>
 #include <triangle.h>
 #include <quad.h>
 
 static constexpr int WIDTH = 640;
 static constexpr int HEIGHT = 480;
 
-static const triangle t;
+std::list<entity *> entities;
 
 void renderScene()
 {
@@ -28,7 +30,7 @@ auto loadVertexShader()
 {
     auto shader = glCreateShader(GL_VERTEX_SHADER);
     std::string shaderProg = utils::load_shader_from_file("src/shader/vertex.vert");
-    const char* cstr = shaderProg.c_str();
+    const char *cstr = shaderProg.c_str();
     glShaderSource(shader, 1, &cstr, NULL);
     glCompileShader(shader);
 
@@ -49,7 +51,7 @@ auto loadFragmentShader()
 {
     auto shader = glCreateShader(GL_FRAGMENT_SHADER);
     std::string shaderProg = utils::load_shader_from_file("src/shader/fragment.frag");
-    const char* cstr = shaderProg.c_str();
+    const char *cstr = shaderProg.c_str();
     glShaderSource(shader, 1, &cstr, NULL);
     glCompileShader(shader);
 
@@ -114,40 +116,25 @@ int main(int argc, char **argv)
                   << infoLog << std::endl;
     }
 
-    std::vector<double> buffer;
-    std::for_each(t.vertices().begin(), t.vertices().end(), [&buffer](auto vertex)
-                  {
-                    buffer.push_back(vertex.x);
-                    buffer.push_back(vertex.y);
-                    buffer.push_back(vertex.z);
-                    buffer.push_back(vertex.r);
-                    buffer.push_back(vertex.g);
-                    buffer.push_back(vertex.b);
-                    buffer.push_back(vertex.a);
-                    });
+    entities.push_back(new triangle(-.5, -.5, .5, .7));
+    entities.push_back(new quad(0, 0, 1, 1));
 
-    unsigned int VBO;
-    glGenBuffers(1, &VBO);
-
-    unsigned int VAO;
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, buffer.size() * sizeof(double), buffer.data(), GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_DOUBLE, GL_FALSE, 7 * sizeof(double), (void *)0);
-    glVertexAttribPointer(1, 4, GL_DOUBLE, GL_FALSE, 7 * sizeof(double), (void *)(3 * sizeof(double)));
-    glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
+    std::for_each(entities.begin(), entities.end(), [](auto entity)
+                  { entity->start(); });
 
     glViewport(0, 0, WIDTH, HEIGHT);
     while (!glfwWindowShouldClose(window))
     {
         renderScene();
 
-        glUseProgram(shaderProgram);
-        glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLE_STRIP, 0, t.indices().size());
+        std::for_each(entities.begin(), entities.end(), [shaderProgram](auto entity)
+                      {
+            glUseProgram(shaderProgram);
+            geometry<vertex>* geom = dynamic_cast<geometry<vertex>*>(entity);
+            if (geom)
+            {
+                geom->draw();
+            } });
 
         glfwSwapBuffers(window);
         glfwPollEvents();

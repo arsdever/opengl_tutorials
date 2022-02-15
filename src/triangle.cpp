@@ -5,12 +5,23 @@ triangle::triangle()
     init();
 }
 
-const std::list<vertex> &triangle::vertices() const
+triangle::triangle(double l, double d, double w, double h)
+    : triangle()
+{
+    _vertices[0].x = l;
+    _vertices[0].y = d;
+    _vertices[1].x = l + w;
+    _vertices[1].y = d;
+    _vertices[2].x = l + w / 2.0;
+    _vertices[2].y = l + h;
+}
+
+const std::vector<vertex> &triangle::vertices() const
 {
     return _vertices;
 }
 
-const std::list<unsigned long> &triangle::indices() const
+const std::vector<unsigned long> &triangle::indices() const
 {
     return _indices;
 }
@@ -18,6 +29,16 @@ const std::list<unsigned long> &triangle::indices() const
 unsigned long triangle::vertex_count() const
 {
     return 3;
+}
+
+std::vector<vertex> &triangle::vertices()
+{
+    return _vertices;
+}
+
+std::vector<unsigned long> &triangle::indices()
+{
+    return _indices;
 }
 
 void triangle::init()
@@ -34,4 +55,5 @@ void triangle::init()
     _indices.push_back(0);
     _indices.push_back(1);
     _indices.push_back(2);
+    geometry::init();
 }

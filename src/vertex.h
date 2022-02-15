@@ -17,4 +17,12 @@ struct vertex
     double g;
     double b;
     double a;
+
+    static void populate_attributes()
+    {
+        glVertexAttribPointer(0, 3, GL_DOUBLE, GL_FALSE, 7 * sizeof(double), (void *)0);
+        glVertexAttribPointer(1, 4, GL_DOUBLE, GL_FALSE, 7 * sizeof(double), (void *)(3 * sizeof(double)));
+        glEnableVertexAttribArray(0);
+        glEnableVertexAttribArray(1);
+    }
 };
