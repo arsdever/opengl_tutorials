@@ -36,7 +36,7 @@ const std::vector<vertex> &quad::vertices() const
     return _vertices;
 }
 
-const std::vector<unsigned long> &quad::indices() const
+const std::vector<unsigned int> &quad::indices() const
 {
     return _indices;
 }
@@ -46,7 +46,7 @@ std::vector<vertex> &quad::vertices()
     return _vertices;
 }
 
-std::vector<unsigned long> &quad::indices()
+std::vector<unsigned int> &quad::indices()
 {
     return _indices;
 }
@@ -54,4 +54,9 @@ std::vector<unsigned long> &quad::indices()
 unsigned long quad::vertex_count() const
 {
     return 4;
+}
+
+void quad::draw() const
+{
+    geometry::draw(GL_TRIANGLE_STRIP);
 }

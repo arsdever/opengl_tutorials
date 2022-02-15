@@ -21,7 +21,7 @@ const std::vector<vertex> &triangle::vertices() const
     return _vertices;
 }
 
-const std::vector<unsigned long> &triangle::indices() const
+const std::vector<unsigned int> &triangle::indices() const
 {
     return _indices;
 }
@@ -36,7 +36,7 @@ std::vector<vertex> &triangle::vertices()
     return _vertices;
 }
 
-std::vector<unsigned long> &triangle::indices()
+std::vector<unsigned int> &triangle::indices()
 {
     return _indices;
 }

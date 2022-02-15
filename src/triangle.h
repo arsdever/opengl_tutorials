@@ -9,7 +9,7 @@ public:
     triangle(double l, double d, double w, double h);
 
     virtual const std::vector<vertex_t> &vertices() const override;
-    virtual const std::vector<unsigned long> &indices() const override;
+    virtual const std::vector<unsigned int> &indices() const override;
     virtual unsigned long vertex_count() const override;
 
 private:
@@ -17,10 +17,10 @@ private:
 
 protected:
     virtual std::vector<vertex_t> &vertices() override;
-    virtual std::vector<unsigned long> &indices() override;
+    virtual std::vector<unsigned int> &indices() override;
 
 private:
     bool _initialized { false };
     std::vector<vertex_t> _vertices;
-    std::vector<unsigned long> _indices;
+    std::vector<unsigned int> _indices;
 };
