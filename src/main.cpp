@@ -12,20 +12,19 @@
 
 #include <helper.h>
 
-#include <entity.h>
+#include <entity_manager.h>
 #include <triangle.h>
 #include <quad.h>
 #include <plane.h>
+#include <camera.h>
 
 static constexpr int WIDTH = 640;
 static constexpr int HEIGHT = 480;
 
-std::list<entity *> entities;
+std::list<camera*> cameras;
 
 void renderScene()
 {
-    glClearColor(0.f, 0.f, 0.f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 int main(int argc, char **argv)
@@ -60,9 +59,9 @@ int main(int argc, char **argv)
     plane *y = new plane();
     plane *z = new plane();
 
-    entities.push_back(x);
-    entities.push_back(y);
-    entities.push_back(z);
+    entity_manager::instance().add_entity(x);
+    entity_manager::instance().add_entity(y);
+    entity_manager::instance().add_entity(z);
 
     x->_color = color{1, 0, 0, 1};
     y->_color = color{0, 1, 0, 1};
@@ -74,42 +73,22 @@ int main(int argc, char **argv)
     static_cast<geometry<vertex> *>(y)->rotate(glm::vec3{0, 3.1415 / 2, 0});
     static_cast<geometry<vertex> *>(z)->rotate(glm::vec3{3.1415 / 2, 0, 0});
 
+    auto entities = entity_manager::instance().entities();
     std::for_each(entities.begin(), entities.end(), [](auto entity)
                   { entity->start(); });
-
-    glm::mat4 perspective = glm::perspective<double>(
-        120.0, static_cast<double>(WIDTH) / static_cast<double>(HEIGHT),
-        0.001f, 300.0);
-
-    glMatrixMode(GL_PROJECTION);
-    glLoadMatrixf(glm::value_ptr(perspective));
-
-    glDepthFunc(GL_LESS);
-    glEnable(GL_DEPTH_TEST);
-
-    glViewport(0, 0, WIDTH, HEIGHT);
+    
+    camera* main = new camera();
+    cameras.push_back(main);
+    main->transformation().move(glm::vec3(0, 0, -3));
+    main->set_viewport(0, 0, WIDTH, HEIGHT);
 
     while (!glfwWindowShouldClose(window))
     {
-        renderScene();
+        std::for_each(cameras.begin(), cameras.end(), [](auto camera) {
+            camera->render();
+            });
 
-        std::for_each(entities.begin(), entities.end(), [perspective](auto entity)
-                      {
-            geometry<vertex>* geom = dynamic_cast<geometry<vertex>*>(entity);
-            if (geom)
-            {
-                // geom->draw();
-                glm::mat4 cameraTransform = perspective *
-                    glm::lookAt(
-                        -glm::vec3{
-                            sin(glfwGetTime()) * 10,
-                            cos(glfwGetTime()) * 10,
-                            -10},
-                        glm::vec3{0},
-                        glm::vec3{0, 1, 0});
-                geom->draw(cameraTransform);
-            } });
-
+        main->transformation().move(glm::vec3(sin(glfwGetTime()), cos(glfwGetTime()), 0));
         glfwSwapBuffers(window);
         glfwPollEvents();
     }

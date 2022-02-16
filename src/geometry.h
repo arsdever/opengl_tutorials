@@ -51,7 +51,7 @@ private:
     glm::vec3 _scale{1};
 
     shader_prog _shader_prog;
-    mutable glm::mat4 _camera{1};
+    mutable glm::mat4 _camera;
 };
 
 template <typename vertex_t>
