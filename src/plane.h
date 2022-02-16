@@ -2,25 +2,26 @@
 
 #include <geometry.h>
 
-class quad : public geometry<vertex>
+class plane : public geometry<vertex>
 {
 public:
-    quad();
-    quad(double x, double y, double w, double h);
-
+    plane();
     virtual const std::vector<vertex_t> &vertices() const override;
     virtual const std::vector<unsigned int> &indices() const override;
     virtual unsigned long vertex_count() const override;
     virtual void draw() const override;
 
-private:
+protected:
     virtual void init() override;
 
-protected:
     virtual std::vector<vertex_t> &vertices() override;
     virtual std::vector<unsigned int> &indices() override;
 
 private:
     std::vector<vertex_t> _vertices;
     std::vector<unsigned int> _indices;
+
+public:
+    color _color;
+    void update_color();
 };

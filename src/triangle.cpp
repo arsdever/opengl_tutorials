@@ -16,7 +16,7 @@ triangle::triangle(double l, double d, double w, double h)
     _vertices[2].y = l + h;
 }
 
-const std::vector<vertex> &triangle::vertices() const
+const std::vector<triangle::vertex_t> &triangle::vertices() const
 {
     return _vertices;
 }
@@ -31,7 +31,7 @@ unsigned long triangle::vertex_count() const
     return 3;
 }
 
-std::vector<vertex> &triangle::vertices()
+std::vector<triangle::vertex_t> &triangle::vertices()
 {
     return _vertices;
 }

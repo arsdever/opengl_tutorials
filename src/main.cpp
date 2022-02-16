@@ -3,6 +3,8 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glut/glut.h>
+#include <glm/ext.hpp>
+#include <glm/ext/matrix_clip_space.hpp>
 
 #include <iostream>
 #include <vector>
@@ -13,6 +15,7 @@
 #include <entity.h>
 #include <triangle.h>
 #include <quad.h>
+#include <plane.h>
 
 static constexpr int WIDTH = 640;
 static constexpr int HEIGHT = 480;
@@ -21,51 +24,8 @@ std::list<entity *> entities;
 
 void renderScene()
 {
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-
-    glClear(GL_COLOR_BUFFER_BIT);
-}
-
-auto loadVertexShader()
-{
-    auto shader = glCreateShader(GL_VERTEX_SHADER);
-    std::string shaderProg = utils::load_shader_from_file("src/shader/vertex.vert");
-    const char *cstr = shaderProg.c_str();
-    glShaderSource(shader, 1, &cstr, NULL);
-    glCompileShader(shader);
-
-    int success;
-    char infoLog[512];
-    glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-
-    if (!success)
-    {
-        glGetShaderInfoLog(shader, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n"
-                  << infoLog << std::endl;
-    }
-    return shader;
-}
-
-auto loadFragmentShader()
-{
-    auto shader = glCreateShader(GL_FRAGMENT_SHADER);
-    std::string shaderProg = utils::load_shader_from_file("src/shader/fragment.frag");
-    const char *cstr = shaderProg.c_str();
-    glShaderSource(shader, 1, &cstr, NULL);
-    glCompileShader(shader);
-
-    int success;
-    char infoLog[512];
-    glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-
-    if (!success)
-    {
-        glGetShaderInfoLog(shader, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n"
-                  << infoLog << std::endl;
-    }
-    return shader;
+    glClearColor(0.f, 0.f, 0.f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 int main(int argc, char **argv)
@@ -93,52 +53,70 @@ int main(int argc, char **argv)
         return -1;
     }
 
-    auto vertexShader = loadVertexShader();
-    auto fragmentShader = loadFragmentShader();
+    // entities.push_back(new triangle());//-.5, -.5, .5, .7
+    // entities.push_back(new quad(0, 0, 1, 1));
+    plane *x = new plane();
+    plane *y = new plane();
+    plane *z = new plane();
 
-    unsigned int shaderProgram;
-    shaderProgram = glCreateProgram();
+    entities.push_back(x);
+    entities.push_back(y);
+    entities.push_back(z);
 
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
+    x->_color = color{1, 0, 0, 1};
+    y->_color = color{0, 1, 0, 1};
+    z->_color = color{0, 0, 1, 1};
+    x->update_color();
+    y->update_color();
+    z->update_color();
 
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
-
-    int success;
-    char infoLog[512];
-    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-    if (!success)
-    {
-        glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-        std::cout << "ERROR::PROGRAM\n"
-                  << infoLog << std::endl;
-    }
-
-    entities.push_back(new triangle(-.5, -.5, .5, .7));
-    entities.push_back(new quad(0, 0, 1, 1));
+    static_cast<geometry<vertex> *>(y)->rotate(glm::vec3{0, 3.1415 / 2, 0});
+    static_cast<geometry<vertex> *>(z)->rotate(glm::vec3{3.1415 / 2, 0, 0});
 
     std::for_each(entities.begin(), entities.end(), [](auto entity)
                   { entity->start(); });
 
+    glm::mat4 perspective = glm::perspective<double>(
+        10.0, static_cast<double>(WIDTH) / static_cast<double>(HEIGHT),
+        0.001f, 300.0);
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadMatrixf(glm::value_ptr(perspective));
+
+    glDepthFunc(GL_LESS);
+    glEnable(GL_DEPTH_TEST);
+
     glViewport(0, 0, WIDTH, HEIGHT);
+
     while (!glfwWindowShouldClose(window))
     {
         renderScene();
 
-        std::for_each(entities.begin(), entities.end(), [shaderProgram](auto entity)
+        std::for_each(entities.begin(), entities.end(), [perspective](auto entity)
                       {
-            glUseProgram(shaderProgram);
             geometry<vertex>* geom = dynamic_cast<geometry<vertex>*>(entity);
             if (geom)
             {
-                geom->draw();
+                // geom->draw();
+                glm::mat4 cameraTransform = perspective *
+                    glm::lookAt(
+                        -glm::vec3{
+                            1,
+                            1,
+                            -2},
+                        glm::vec3{0},
+                        glm::vec3{0, 1, 0});
+                geom->draw(cameraTransform);
             } });
 
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
+
+    std::for_each(entities.begin(), entities.end(), [](auto e)
+                  { delete e; e = 0; });
+
+    entities.clear();
 
     return 0;
 }

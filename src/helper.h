@@ -5,7 +5,7 @@
 
 namespace utils
 {
-    std::string load_shader_from_file(const std::string& filepath)
+    inline std::string load_shader_from_file(const std::string& filepath)
     {
         std::ifstream reader(filepath);
         std::stringstream buf;

@@ -20,10 +20,10 @@ quad::quad(double x, double y, double w, double h)
 
 void quad::init()
 {
-    _vertices.push_back(vertex{-.5, -.5, 0, 1, 0, 0, 1});
-    _vertices.push_back(vertex{.5, -.5, 0, 0, 1, 0, 1});
-    _vertices.push_back(vertex{-.5, .5, 0, 0, 0, 1, 1});
-    _vertices.push_back(vertex{.5, .5, 0, 1, 1, 0, 1});
+    _vertices.push_back(vertex{-.5, -.5, 1, 1, 0, 0, 1});
+    _vertices.push_back(vertex{.5, -.5, 1, 0, 1, 0, 1});
+    _vertices.push_back(vertex{-.5, .5, 1, 0, 0, 1, 1});
+    _vertices.push_back(vertex{.5, .5, 1, 1, 1, 0, 1});
     _indices.push_back(0);
     _indices.push_back(1);
     _indices.push_back(2);
@@ -31,7 +31,7 @@ void quad::init()
     geometry::init();
 }
 
-const std::vector<vertex> &quad::vertices() const
+const std::vector<quad::vertex_t> &quad::vertices() const
 {
     return _vertices;
 }
@@ -41,7 +41,7 @@ const std::vector<unsigned int> &quad::indices() const
     return _indices;
 }
 
-std::vector<vertex> &quad::vertices()
+std::vector<quad::vertex_t> &quad::vertices()
 {
     return _vertices;
 }
