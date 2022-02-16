@@ -2,7 +2,7 @@
 #include <GLES/gl.h>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include <glut/glut.h>
+#include <gl/glut.h>
 #include <glm/ext.hpp>
 #include <glm/ext/matrix_clip_space.hpp>
 
@@ -36,6 +36,7 @@ int main(int argc, char **argv)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    glfwWindowHint(GLFW_SAMPLES, 8);
 
     GLFWwindow *window = glfwCreateWindow(WIDTH, HEIGHT, "LearnOpenGL", NULL, NULL);
 
@@ -77,7 +78,7 @@ int main(int argc, char **argv)
                   { entity->start(); });
 
     glm::mat4 perspective = glm::perspective<double>(
-        10.0, static_cast<double>(WIDTH) / static_cast<double>(HEIGHT),
+        120.0, static_cast<double>(WIDTH) / static_cast<double>(HEIGHT),
         0.001f, 300.0);
 
     glMatrixMode(GL_PROJECTION);
@@ -101,9 +102,9 @@ int main(int argc, char **argv)
                 glm::mat4 cameraTransform = perspective *
                     glm::lookAt(
                         -glm::vec3{
-                            1,
-                            1,
-                            -2},
+                            sin(glfwGetTime()) * 10,
+                            cos(glfwGetTime()) * 10,
+                            -10},
                         glm::vec3{0},
                         glm::vec3{0, 1, 0});
                 geom->draw(cameraTransform);

@@ -4,7 +4,7 @@ set (CMAKE_CXX_STANDARD 20)
 
 project (opengl_trainings)
 
-include(/Users/arsdever/vcpkg/scripts/buildsystems/vcpkg.cmake) 
+include($ENV{VCPKG_DIR}/scripts/buildsystems/vcpkg.cmake) 
 add_subdirectory (src)
 
 if (OPENGL_ENABLE_TESTING)

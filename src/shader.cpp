@@ -19,7 +19,7 @@ shader shader::from_file(const std::filesystem::path& path)
         s._type = GL_COMPUTE_SHADER;
 
     s._id = glCreateShader(s._type);
-    std::string shader_prog = utils::load_shader_from_file(path);
+    std::string shader_prog = utils::load_shader_from_file(path.string());
     const char *cstr = shader_prog.c_str();
     glShaderSource(s._id, 1, &cstr, NULL);
     glCompileShader(s._id);
