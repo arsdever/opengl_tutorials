@@ -36,7 +36,10 @@ namespace gl
 	{
 		std::shared_ptr<transform> t = get_component<transform>();
 
-		return get_perspective() * glm::lookAt(t->position(), glm::vec3{ 0, 0, 1 } *t->rotation(), glm::vec3{ 0, 1, 0 });
+		return get_perspective() * glm::lookAt(
+			t->position(),
+			t->position() + t->rotation() * glm::vec3{ 0, 0, -1 },
+			glm::vec3{ 0, 1, 0 });
 	}
 
 	void camera::render()
