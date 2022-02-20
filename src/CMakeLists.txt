@@ -4,7 +4,7 @@ find_package(glad CONFIG REQUIRED)
 find_package(GLUT REQUIRED)
 find_package(glm REQUIRED)
 
-add_executable (glapp main.cpp geometry.h triangle.h triangle.cpp helper.h vertex.h quad.h quad.cpp shader.h shader.cpp shader_prog.h shader_prog.cpp plane.h plane.cpp "camera.h" "camera.cpp" "transform.h" "transform.cpp" "entity_manager.h" "singleton.h" "entity_manager.cpp")
+add_executable (glapp main.cpp helper.h vertex.h shader.h shader.cpp shader_prog.h shader_prog.cpp "components/camera.hpp" "object.hpp" "prototypes.hpp" "object.cpp" "components/component.hpp" "components/transform.hpp" "components/transform.cpp" "components/mesh.hpp" "components/renderer.hpp" "components/renderer.cpp" "components/component.cpp" "components/mesh.cpp" "components/sample_meshes/triangle_mesh.hpp" "components/sample_meshes/triangle_mesh.cpp" "components/camera.hpp" "components/camera.cpp" "scene.hpp" "scene.cpp")
 
 target_link_libraries (glapp PUBLIC ${OpenGL_LIBRARIES} glfw glad::glad GLUT::GLUT)
 target_include_directories (glapp PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

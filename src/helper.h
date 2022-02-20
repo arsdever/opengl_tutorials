@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <sstream>
+#include <random>
 
 namespace utils
 {
@@ -11,5 +12,23 @@ namespace utils
         std::stringstream buf;
         buf << reader.rdbuf();
         return buf.str();
+    }
+
+    inline std::string generate_uid()
+    {
+        std::string result;
+        result.resize(64);
+        static constexpr char symbols[] = "1234567890qwertyuiopasdfghjklzxcvnmQWERTYUIOPASDFGHJKLZXCVBNM";
+
+        std::random_device r;
+        std::default_random_engine e1(r());
+        std::uniform_int_distribution<int> uniform_dist(0, sizeof(symbols));
+
+        for (int i = 0; i < 64; ++i)
+        {
+            result[i] = symbols[uniform_dist(e1)];
+        }
+
+        return result;
     }
 }

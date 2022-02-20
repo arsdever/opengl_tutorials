@@ -1,102 +1,97 @@
-#include <glm/glm.hpp>
-#include <GLES/gl.h>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include <gl/glut.h>
-#include <glm/ext.hpp>
-#include <glm/ext/matrix_clip_space.hpp>
-
 #include <iostream>
-#include <vector>
-#include <list>
 
-#include <helper.h>
+#include <scene.hpp>
+#include <object.hpp>
 
-#include <entity_manager.h>
-#include <triangle.h>
-#include <quad.h>
-#include <plane.h>
-#include <camera.h>
+#include <components/camera.hpp>
+#include <components/transform.hpp>
+#include <components/sample_meshes/triangle_mesh.hpp>
+#include <components/mesh.hpp>
+#include <components/renderer.hpp>
 
 static constexpr int WIDTH = 640;
 static constexpr int HEIGHT = 480;
 
-std::list<camera*> cameras;
-
-void renderScene()
+gl::object_ptr create_camera_object()
 {
+	gl::object_ptr cam = std::make_shared<gl::object>();
+	cam->add_component<gl::camera>();
+	cam->add_component<gl::transform>();
+	return cam;
 }
 
-int main(int argc, char **argv)
+gl::object_ptr create_triangle_object()
 {
-    glfwInit();
+	gl::object_ptr tri = std::make_shared<gl::object>();
+	tri->add_component<gl::transform>();
+	tri->add_component<gl::triangle_mesh>();
+	tri->add_component<gl::renderer>();
+	return tri;
+}
 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-    glfwWindowHint(GLFW_SAMPLES, 8);
+GLFWwindow* init_gl_screen()
+{
+	glfwInit();
 
-    GLFWwindow *window = glfwCreateWindow(WIDTH, HEIGHT, "LearnOpenGL", NULL, NULL);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+	glfwWindowHint(GLFW_SAMPLES, 8);
 
-    if (window == NULL)
-    {
-        std::cerr << "Window was not created" << std::endl;
-        return -1;
-    }
+	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "LearnOpenGL", NULL, NULL);
 
-    glfwMakeContextCurrent(window);
+	if (window == NULL)
+	{
+		std::cerr << "Window was not created" << std::endl;
+		return 0;
+	}
 
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-    {
-        std::cerr << "Failed to initialize OpenGL context" << std::endl;
-        return -1;
-    }
+	glfwMakeContextCurrent(window);
 
-    // entities.push_back(new triangle());//-.5, -.5, .5, .7
-    // entities.push_back(new quad(0, 0, 1, 1));
-    plane *x = new plane();
-    plane *y = new plane();
-    plane *z = new plane();
+	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+	{
+		std::cerr << "Failed to initialize OpenGL context" << std::endl;
+		return 0;
+	}
 
-    entity_manager::instance().add_entity(x);
-    entity_manager::instance().add_entity(y);
-    entity_manager::instance().add_entity(z);
+	return window;
+}
 
-    x->_color = color{1, 0, 0, 1};
-    y->_color = color{0, 1, 0, 1};
-    z->_color = color{0, 0, 1, 1};
-    x->update_color();
-    y->update_color();
-    z->update_color();
+int main(int argc, char** argv)
+{
+	GLFWwindow* window = init_gl_screen();
+	if (window == 0)
+	{
+		return -1;
+	}
 
-    static_cast<geometry<vertex> *>(y)->rotate(glm::vec3{0, 3.1415 / 2, 0});
-    static_cast<geometry<vertex> *>(z)->rotate(glm::vec3{3.1415 / 2, 0, 0});
+	gl::scene_ptr s = std::make_shared<gl::scene>();
+	s->load();
 
-    auto entities = entity_manager::instance().entities();
-    std::for_each(entities.begin(), entities.end(), [](auto entity)
-                  { entity->start(); });
-    
-    camera* main = new camera();
-    cameras.push_back(main);
-    main->transformation().move(glm::vec3(0, 0, -3));
-    main->set_viewport(0, 0, WIDTH, HEIGHT);
+	auto cam = create_camera_object();
+	auto tri = create_triangle_object();
 
-    while (!glfwWindowShouldClose(window))
-    {
-        std::for_each(cameras.begin(), cameras.end(), [](auto camera) {
-            camera->render();
-            });
+	s->add_object(cam);
+	s->add_object(tri);
 
-        main->transformation().move(glm::vec3(sin(glfwGetTime()), cos(glfwGetTime()), 0));
-        glfwSwapBuffers(window);
-        glfwPollEvents();
-    }
+	cam->get_component<gl::camera>()->set_viewport(gl::camera::rect{ 0, 0, WIDTH, HEIGHT });
 
-    std::for_each(entities.begin(), entities.end(), [](auto e)
-                  { delete e; e = 0; });
+	for (auto obj : *gl::scene::current_scene())
+	{
+		obj->start();
+	}
 
-    entities.clear();
+	while (!glfwWindowShouldClose(window))
+	{
+		for (auto obj : *gl::scene::current_scene())
+			obj->update();
 
-    return 0;
+		glfwSwapBuffers(window);
+		glfwPollEvents();
+	}
+
+	return 0;
 }
