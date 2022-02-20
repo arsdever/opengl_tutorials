@@ -4,6 +4,8 @@
 
 #include <scene.hpp>
 #include <object.hpp>
+#include <timer.hpp>
+#include <fps_counter.hpp>
 
 #include <components/camera.hpp>
 #include <components/transform.hpp>
@@ -13,6 +15,7 @@
 
 static constexpr int WIDTH = 640;
 static constexpr int HEIGHT = 480;
+static std::shared_ptr<gl::camera> main_camera = nullptr;
 
 gl::object_ptr create_camera_object()
 {
@@ -60,6 +63,32 @@ GLFWwindow* init_gl_screen()
 	return window;
 }
 
+void mouse_position_cb(GLFWwindow*, double x, double y)
+{
+	auto t = main_camera->get_component<gl::transform>();
+}
+
+void keypress_cb(GLFWwindow* window, int key, int scan, int action, int mode)
+{
+	auto t = main_camera->get_component<gl::transform>();
+	if (key == GLFW_KEY_W)
+	{
+		t->move(glm::vec3{ 0, 0, -1 } *gl::timer::delta());
+	}
+	if (key == GLFW_KEY_D)
+	{
+		t->move(glm::vec3{ 1, 0, 0 } *gl::timer::delta());
+	}
+	if (key == GLFW_KEY_S)
+	{
+		t->move(glm::vec3{ 0, 0, 1 } *gl::timer::delta());
+	}
+	if (key == GLFW_KEY_A)
+	{
+		t->move(glm::vec3{ -1, 0, 0 } *gl::timer::delta());
+	}
+}
+
 int main(int argc, char** argv)
 {
 	GLFWwindow* window = init_gl_screen();
@@ -77,13 +106,21 @@ int main(int argc, char** argv)
 	s->add_object(cam);
 	s->add_object(tri);
 
-	cam->get_component<gl::camera>()->set_viewport(gl::camera::rect{ 0, 0, WIDTH, HEIGHT });
+	main_camera = cam->get_component<gl::camera>();
+	main_camera->set_viewport(gl::camera::rect{ 0, 0, WIDTH, HEIGHT });
+	gl::fps_counter fps;
 
 	for (auto obj : *gl::scene::current_scene())
 	{
 		obj->start();
 	}
 
+	glfwSetCursorPosCallback(window, &mouse_position_cb);
+	glfwSetKeyCallback(window, &keypress_cb);
+	gl::timer::update();
+
+	fps.start();
+	fps.on_data_update([](double data) {std::cout << "Execution speed: " << data << " fps" << std::endl; });
 	while (!glfwWindowShouldClose(window))
 	{
 		for (auto obj : *gl::scene::current_scene())
@@ -91,6 +128,8 @@ int main(int argc, char** argv)
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
+		gl::timer::update();
+		fps.frame();
 	}
 
 	return 0;
