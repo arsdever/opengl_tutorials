@@ -1,122 +1,140 @@
-#include <glm/glm.hpp>
-#include <GLES/gl.h>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include <glut/glut.h>
-#include <glm/ext.hpp>
-#include <glm/ext/matrix_clip_space.hpp>
-
 #include <iostream>
-#include <vector>
-#include <list>
 
-#include <helper.h>
+#include <scene.hpp>
+#include <object.hpp>
+#include <timer.hpp>
+#include <fps_counter.hpp>
+#include <action_ctx.hpp>
 
-#include <entity.h>
-#include <triangle.h>
-#include <quad.h>
-#include <plane.h>
+#include <components/camera.hpp>
+#include <components/input_system.hpp>
+#include <components/mesh.hpp>
+#include <components/transform.hpp>
+#include <components/renderer.hpp>
+
+#include <components/sample_meshes/triangle_mesh.hpp>
 
 static constexpr int WIDTH = 640;
 static constexpr int HEIGHT = 480;
 
-std::list<entity *> entities;
-
-void renderScene()
+gl::object_ptr create_camera_object()
 {
-    glClearColor(0.f, 0.f, 0.f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	gl::object_ptr cam = std::make_shared<gl::object>();
+	cam->add_component<gl::camera>();
+	cam->add_component<gl::transform>();
+	return cam;
 }
 
-int main(int argc, char **argv)
+gl::object_ptr create_input_system_object(GLFWwindow* win)
 {
-    glfwInit();
+	gl::object_ptr is = std::make_shared<gl::object>();
+	is->add_component<gl::input_system>();
+	is->get_component<gl::input_system>()->set_window(win);
+	return is;
+}
 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+gl::object_ptr create_triangle_object()
+{
+	gl::object_ptr tri = std::make_shared<gl::object>();
+	tri->add_component<gl::transform>();
+	tri->add_component<gl::triangle_mesh>();
+	tri->add_component<gl::renderer>();
+	return tri;
+}
 
-    GLFWwindow *window = glfwCreateWindow(WIDTH, HEIGHT, "LearnOpenGL", NULL, NULL);
+GLFWwindow* init_gl_screen()
+{
+	glfwInit();
 
-    if (window == NULL)
-    {
-        std::cerr << "Window was not created" << std::endl;
-        return -1;
-    }
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+	glfwWindowHint(GLFW_SAMPLES, 8);
 
-    glfwMakeContextCurrent(window);
+	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "LearnOpenGL", NULL, NULL);
 
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-    {
-        std::cerr << "Failed to initialize OpenGL context" << std::endl;
-        return -1;
-    }
+	if (window == NULL)
+	{
+		std::cerr << "Window was not created" << std::endl;
+		return 0;
+	}
 
-    // entities.push_back(new triangle());//-.5, -.5, .5, .7
-    // entities.push_back(new quad(0, 0, 1, 1));
-    plane *x = new plane();
-    plane *y = new plane();
-    plane *z = new plane();
+	glfwMakeContextCurrent(window);
 
-    entities.push_back(x);
-    entities.push_back(y);
-    entities.push_back(z);
+	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+	{
+		std::cerr << "Failed to initialize OpenGL context" << std::endl;
+		return 0;
+	}
 
-    x->_color = color{1, 0, 0, 1};
-    y->_color = color{0, 1, 0, 1};
-    z->_color = color{0, 0, 1, 1};
-    x->update_color();
-    y->update_color();
-    z->update_color();
+	return window;
+}
 
-    static_cast<geometry<vertex> *>(y)->rotate(glm::vec3{0, 3.1415 / 2, 0});
-    static_cast<geometry<vertex> *>(z)->rotate(glm::vec3{3.1415 / 2, 0, 0});
+int main(int argc, char** argv)
+{
+	GLFWwindow* window = init_gl_screen();
+	if (window == 0)
+	{
+		return -1;
+	}
 
-    std::for_each(entities.begin(), entities.end(), [](auto entity)
-                  { entity->start(); });
+	gl::scene_ptr s = std::make_shared<gl::scene>();
+	s->load();
 
-    glm::mat4 perspective = glm::perspective<double>(
-        10.0, static_cast<double>(WIDTH) / static_cast<double>(HEIGHT),
-        0.001f, 300.0);
+	auto cam = create_camera_object();
+	auto tri = create_triangle_object();
+	auto input = create_input_system_object(window);
 
-    glMatrixMode(GL_PROJECTION);
-    glLoadMatrixf(glm::value_ptr(perspective));
+	s->add_object(cam);
+	s->add_object(tri);
+	s->add_object(input);
 
-    glDepthFunc(GL_LESS);
-    glEnable(GL_DEPTH_TEST);
+	gl::camera_ptr main_camera = cam->get_component<gl::camera>();
+	main_camera->set_viewport(gl::camera::rect{ 0, 0, WIDTH, HEIGHT });
+	main_camera->set_main();
+	main_camera->get_component<gl::transform>()->move(glm::vec3{ 0, 0, 3 });
 
-    glViewport(0, 0, WIDTH, HEIGHT);
+	input->get_component<gl::input_system>()->on_action("mouse:position", [main_camera](const gl::action_ctx& ctx) {
+		glm::vec2 pos = ctx.value<glm::vec2>();
+		main_camera->get_component<gl::transform>()->set_rotation(glm::quat(glm::vec3{ -pos.y / 1000.0, -pos.x / 1000.0, 0 }));
+		});
+	input->get_component<gl::input_system>()->on_action("mouse:left_click", [main_camera](const gl::action_ctx& ctx) {
+		glm::vec2 pos = ctx.value<glm::vec2>();
+		gl::transform_ptr tcam = main_camera->get_component<gl::transform>();
+		static constexpr float speed = 100;
+		tcam->move(tcam->forward() * gl::timer::delta() * speed);
+		});
+	input->get_component<gl::input_system>()->on_action("mouse:right_click", [main_camera](const gl::action_ctx& ctx) {
+		glm::vec2 pos = ctx.value<glm::vec2>();
+		gl::transform_ptr tcam = main_camera->get_component<gl::transform>();
+		static constexpr float speed = 100;
+		tcam->move(-tcam->forward() * gl::timer::delta() * speed);
+		});
 
-    while (!glfwWindowShouldClose(window))
-    {
-        renderScene();
+	gl::fps_counter fps;
 
-        std::for_each(entities.begin(), entities.end(), [perspective](auto entity)
-                      {
-            geometry<vertex>* geom = dynamic_cast<geometry<vertex>*>(entity);
-            if (geom)
-            {
-                // geom->draw();
-                glm::mat4 cameraTransform = perspective *
-                    glm::lookAt(
-                        -glm::vec3{
-                            1,
-                            1,
-                            -2},
-                        glm::vec3{0},
-                        glm::vec3{0, 1, 0});
-                geom->draw(cameraTransform);
-            } });
+	for (auto obj : *gl::scene::current_scene())
+	{
+		obj->start();
+	}
 
-        glfwSwapBuffers(window);
-        glfwPollEvents();
-    }
+	gl::timer::update();
 
-    std::for_each(entities.begin(), entities.end(), [](auto e)
-                  { delete e; e = 0; });
+	fps.start();
+	fps.on_data_update([](double data) {std::cout << "Execution speed: " << data << " fps" << std::endl; });
+	while (!glfwWindowShouldClose(window))
+	{
+		for (auto obj : *gl::scene::current_scene())
+			obj->update();
 
-    entities.clear();
+		glfwSwapBuffers(window);
+		glfwPollEvents();
+		gl::timer::update();
+		fps.frame();
+	}
 
-    return 0;
+	return 0;
 }
