@@ -23,6 +23,8 @@ namespace gl
 		glm::quat rotation() const;
 		glm::vec3 scale() const;
 
+		glm::vec3 forward() const;
+
 		glm::mat4 get_matrix() const;
 
 	private:

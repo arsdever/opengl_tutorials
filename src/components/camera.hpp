@@ -35,7 +35,11 @@ namespace gl
 
 		virtual void update() override;
 
+		void set_main();
+
 		void set_viewport(rect viewport);
+		rect viewport() const;
+
 		glm::mat4 get_matrix() const;
 		glm::mat4 get_perspective() const;
 

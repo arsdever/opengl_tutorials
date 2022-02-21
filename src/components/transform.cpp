@@ -63,4 +63,9 @@ namespace gl
 	{
 		return _scale;
 	}
+
+	glm::vec3 transform::forward() const
+	{
+		return _rotation * glm::vec3{ 0, 0, -1 };
+	}
 }

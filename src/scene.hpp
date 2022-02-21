@@ -16,6 +16,9 @@ namespace gl
 
 		void load();
 
+		camera_ptr main_camera() const;
+		void set_main_camera(camera_ptr cam);
+
 		static scene_ptr current_scene();
 
 		std::list<object_ptr>::iterator begin();
@@ -24,6 +27,7 @@ namespace gl
 
 	private:
 		std::list<object_ptr> _objects;
+		camera_ptr _main_camera;
 		static scene_ptr _current_scene;
 	};
 }

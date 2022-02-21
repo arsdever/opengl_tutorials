@@ -13,4 +13,6 @@ namespace gl
 	CLASS(object);
 	CLASS(component);
 	CLASS(scene);
+	CLASS(camera);
+	CLASS(transform);
 }

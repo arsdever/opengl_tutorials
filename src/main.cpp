@@ -6,16 +6,18 @@
 #include <object.hpp>
 #include <timer.hpp>
 #include <fps_counter.hpp>
+#include <action_ctx.hpp>
 
 #include <components/camera.hpp>
-#include <components/transform.hpp>
-#include <components/sample_meshes/triangle_mesh.hpp>
+#include <components/input_system.hpp>
 #include <components/mesh.hpp>
+#include <components/transform.hpp>
 #include <components/renderer.hpp>
+
+#include <components/sample_meshes/triangle_mesh.hpp>
 
 static constexpr int WIDTH = 640;
 static constexpr int HEIGHT = 480;
-static std::shared_ptr<gl::camera> main_camera = nullptr;
 
 gl::object_ptr create_camera_object()
 {
@@ -23,6 +25,14 @@ gl::object_ptr create_camera_object()
 	cam->add_component<gl::camera>();
 	cam->add_component<gl::transform>();
 	return cam;
+}
+
+gl::object_ptr create_input_system_object(GLFWwindow* win)
+{
+	gl::object_ptr is = std::make_shared<gl::object>();
+	is->add_component<gl::input_system>();
+	is->get_component<gl::input_system>()->set_window(win);
+	return is;
 }
 
 gl::object_ptr create_triangle_object()
@@ -63,32 +73,6 @@ GLFWwindow* init_gl_screen()
 	return window;
 }
 
-void mouse_position_cb(GLFWwindow*, double x, double y)
-{
-	auto t = main_camera->get_component<gl::transform>();
-}
-
-void keypress_cb(GLFWwindow* window, int key, int scan, int action, int mode)
-{
-	auto t = main_camera->get_component<gl::transform>();
-	if (key == GLFW_KEY_W)
-	{
-		t->move(glm::vec3{ 0, 0, -1 } *gl::timer::delta());
-	}
-	if (key == GLFW_KEY_D)
-	{
-		t->move(glm::vec3{ 1, 0, 0 } *gl::timer::delta());
-	}
-	if (key == GLFW_KEY_S)
-	{
-		t->move(glm::vec3{ 0, 0, 1 } *gl::timer::delta());
-	}
-	if (key == GLFW_KEY_A)
-	{
-		t->move(glm::vec3{ -1, 0, 0 } *gl::timer::delta());
-	}
-}
-
 int main(int argc, char** argv)
 {
 	GLFWwindow* window = init_gl_screen();
@@ -102,12 +86,34 @@ int main(int argc, char** argv)
 
 	auto cam = create_camera_object();
 	auto tri = create_triangle_object();
+	auto input = create_input_system_object(window);
 
 	s->add_object(cam);
 	s->add_object(tri);
+	s->add_object(input);
 
-	main_camera = cam->get_component<gl::camera>();
+	gl::camera_ptr main_camera = cam->get_component<gl::camera>();
 	main_camera->set_viewport(gl::camera::rect{ 0, 0, WIDTH, HEIGHT });
+	main_camera->set_main();
+	main_camera->get_component<gl::transform>()->move(glm::vec3{ 0, 0, 3 });
+
+	input->get_component<gl::input_system>()->on_action("mouse:position", [main_camera](const gl::action_ctx& ctx) {
+		glm::vec2 pos = ctx.value<glm::vec2>();
+		main_camera->get_component<gl::transform>()->set_rotation(glm::quat(glm::vec3{ -pos.y / 1000.0, -pos.x / 1000.0, 0 }));
+		});
+	input->get_component<gl::input_system>()->on_action("mouse:left_click", [main_camera](const gl::action_ctx& ctx) {
+		glm::vec2 pos = ctx.value<glm::vec2>();
+		gl::transform_ptr tcam = main_camera->get_component<gl::transform>();
+		static constexpr float speed = 100;
+		tcam->move(tcam->forward() * gl::timer::delta() * speed);
+		});
+	input->get_component<gl::input_system>()->on_action("mouse:right_click", [main_camera](const gl::action_ctx& ctx) {
+		glm::vec2 pos = ctx.value<glm::vec2>();
+		gl::transform_ptr tcam = main_camera->get_component<gl::transform>();
+		static constexpr float speed = 100;
+		tcam->move(-tcam->forward() * gl::timer::delta() * speed);
+		});
+
 	gl::fps_counter fps;
 
 	for (auto obj : *gl::scene::current_scene())
@@ -115,8 +121,6 @@ int main(int argc, char** argv)
 		obj->start();
 	}
 
-	glfwSetCursorPosCallback(window, &mouse_position_cb);
-	glfwSetKeyCallback(window, &keypress_cb);
 	gl::timer::update();
 
 	fps.start();

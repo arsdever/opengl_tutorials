@@ -15,9 +15,19 @@ namespace gl
 		: _viewport(0, 0, 0, 0)
 	{}
 
+	void camera::set_main()
+	{
+		scene::current_scene()->set_main_camera(static_pointer_cast<camera>(shared_from_this()));
+	}
+
 	void camera::set_viewport(rect viewport)
 	{
 		_viewport = viewport;
+	}
+
+	camera::rect camera::viewport() const
+	{
+		return _viewport;
 	}
 
 	void camera::update()
