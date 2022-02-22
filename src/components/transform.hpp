@@ -24,6 +24,8 @@ namespace gl
 		glm::vec3 scale() const;
 
 		glm::vec3 forward() const;
+		glm::vec3 right() const;
+		glm::vec3 up() const;
 
 		glm::mat4 get_matrix() const;
 

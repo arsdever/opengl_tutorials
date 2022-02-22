@@ -52,7 +52,6 @@ namespace gl
 					glfwGetCursorPos(_window, &x, &y);
 					return action_ctx{ true, glm::vec2{x, y} };
 				}
-				return action_ctx{ false, {} };
 			}
 			if (variable == "right_click")
 			{
@@ -63,9 +62,17 @@ namespace gl
 					glfwGetCursorPos(_window, &x, &y);
 					return action_ctx{ true, glm::vec2{x, y} };
 				}
-				return action_ctx{ false, {} };
 			}
 		}
+		else if (device == "keyboard")
+		{
+			if (glfwGetKey(_window, std::toupper(variable[0])) == GLFW_PRESS)
+			{
+				return action_ctx{ true, 1 };
+			}
+		}
+
+		return action_ctx{ false, {} };
 	}
 
 	void input_system::on_action(const std::string& action, std::function<void(const action_ctx&)> cb)

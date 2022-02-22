@@ -6,7 +6,7 @@ namespace gl
 	transform::transform()
 		: _position{}
 		, _rotation{}
-		, _scale{1}
+		, _scale{ 1 }
 	{}
 
 	void transform::set_position(glm::vec3 position)
@@ -67,5 +67,15 @@ namespace gl
 	glm::vec3 transform::forward() const
 	{
 		return _rotation * glm::vec3{ 0, 0, -1 };
+	}
+
+	glm::vec3 transform::right() const
+	{
+		return glm::cross(forward(), glm::vec3{ 0, 1, 0 });
+	}
+
+	glm::vec3 transform::up() const
+	{
+		return glm::cross(right(), forward());
 	}
 }

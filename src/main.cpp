@@ -101,17 +101,25 @@ int main(int argc, char** argv)
 		glm::vec2 pos = ctx.value<glm::vec2>();
 		main_camera->get_component<gl::transform>()->set_rotation(glm::quat(glm::vec3{ -pos.y / 1000.0, -pos.x / 1000.0, 0 }));
 		});
-	input->get_component<gl::input_system>()->on_action("mouse:left_click", [main_camera](const gl::action_ctx& ctx) {
-		glm::vec2 pos = ctx.value<glm::vec2>();
+	input->get_component<gl::input_system>()->on_action("keyboard:w", [main_camera](const gl::action_ctx& ctx) {
 		gl::transform_ptr tcam = main_camera->get_component<gl::transform>();
-		static constexpr float speed = 100;
+		static constexpr float speed = 40;
 		tcam->move(tcam->forward() * gl::timer::delta() * speed);
 		});
-	input->get_component<gl::input_system>()->on_action("mouse:right_click", [main_camera](const gl::action_ctx& ctx) {
-		glm::vec2 pos = ctx.value<glm::vec2>();
+	input->get_component<gl::input_system>()->on_action("keyboard:s", [main_camera](const gl::action_ctx& ctx) {
 		gl::transform_ptr tcam = main_camera->get_component<gl::transform>();
-		static constexpr float speed = 100;
+		static constexpr float speed = 40;
 		tcam->move(-tcam->forward() * gl::timer::delta() * speed);
+		});
+	input->get_component<gl::input_system>()->on_action("keyboard:a", [main_camera](const gl::action_ctx& ctx) {
+		gl::transform_ptr tcam = main_camera->get_component<gl::transform>();
+		static constexpr float speed = 20;
+		tcam->move(-tcam->right() * gl::timer::delta() * speed);
+		});
+	input->get_component<gl::input_system>()->on_action("keyboard:d", [main_camera](const gl::action_ctx& ctx) {
+		gl::transform_ptr tcam = main_camera->get_component<gl::transform>();
+		static constexpr float speed = 20;
+		tcam->move(tcam->right() * gl::timer::delta() * speed);
 		});
 
 	gl::fps_counter fps;
