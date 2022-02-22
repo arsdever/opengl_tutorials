@@ -22,7 +22,7 @@ namespace utils
 
         std::random_device r;
         std::default_random_engine e1(r());
-        std::uniform_int_distribution<int> uniform_dist(0, sizeof(symbols));
+        std::uniform_int_distribution<int> uniform_dist(0, sizeof(symbols) - 1); // decrease to ignore null terminator
 
         for (int i = 0; i < 64; ++i)
         {
