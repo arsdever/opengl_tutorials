@@ -1,23 +1,22 @@
 #pragma once
 
-#include <list>
-
 #include <prototypes.hpp>
+
+#include <list>
 
 namespace gl
 {
-	class scene
-		: public std::enable_shared_from_this<scene>
+	class scene : public std::enable_shared_from_this<scene>
 	{
 	public:
 		void add_object(object_ptr obj);
 
-		//void remove_object(object_ptr obj);
+		// void remove_object(object_ptr obj);
 
 		void load();
 
 		camera_ptr main_camera() const;
-		void set_main_camera(camera_ptr cam);
+		void	   set_main_camera(camera_ptr cam);
 
 		static scene_ptr current_scene();
 
@@ -27,7 +26,7 @@ namespace gl
 
 	private:
 		std::list<object_ptr> _objects;
-		camera_ptr _main_camera;
-		static scene_ptr _current_scene;
+		camera_ptr			  _main_camera;
+		static scene_ptr	  _current_scene;
 	};
-}
+} // namespace gl

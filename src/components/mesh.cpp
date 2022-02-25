@@ -2,26 +2,13 @@
 
 namespace gl
 {
-	mesh::mesh()
-	{}
+	mesh::mesh() { }
 
-	std::vector<vertex>& mesh::vertices()
-	{
-		return _vertices;
-	}
+	std::vector<vertex>& mesh::vertices() { return _vertices; }
 
-	std::vector<unsigned int>& mesh::indices()
-	{
-		return _indices;
-	}
+	std::vector<unsigned int>& mesh::indices() { return _indices; }
 
-	const std::vector<vertex>& mesh::vertices() const
-	{
-		return _vertices;
-	}
+	const std::vector<vertex>& mesh::vertices() const { return _vertices; }
 
-	const std::vector<unsigned int>& mesh::indices() const
-	{
-		return _indices;
-	}
-}
+	const std::vector<unsigned int>& mesh::indices() const { return _indices; }
+} // namespace gl

@@ -4,20 +4,11 @@
 
 namespace gl
 {
-	float timer::_last{};
+	float timer::_last {};
 
-	float timer::now()
-	{
-		return glfwGetTime();
-	}
+	float timer::now() { return glfwGetTime(); }
 
-	void timer::update()
-	{
-		_last = now();
-	}
+	void timer::update() { _last = now(); }
 
-	float timer::delta()
-	{
-		return now() - _last;
-	}
-}
+	float timer::delta() { return now() - _last; }
+} // namespace gl

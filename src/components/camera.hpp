@@ -5,29 +5,19 @@
 
 namespace gl
 {
-	class camera
-		: public component
+	class camera : public component
 	{
 	public:
 		struct rect
 		{
-			rect(float _x, float _y, float _w, float _h)
-				: x{ _x }
-				, y{ _y }
-				, w{ _w }
-				, h{ _h }
-			{}
+			rect(float _x, float _y, float _w, float _h) : x { _x }, y { _y }, w { _w }, h { _h } { }
 
-			rect(const rect& o)
-				: rect(o.x, o.y, o.w, o.h)
-			{
+			rect(const rect& o) : rect(o.x, o.y, o.w, o.h) { }
 
-			}
-
-			float x{ 0 };
-			float y{ 0 };
-			float w{ 0 };
-			float h{ 0 };
+			float x { 0 };
+			float y { 0 };
+			float w { 0 };
+			float h { 0 };
 		};
 
 	public:
@@ -48,4 +38,4 @@ namespace gl
 	private:
 		rect _viewport;
 	};
-}
+} // namespace gl

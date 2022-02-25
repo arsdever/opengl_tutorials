@@ -1,17 +1,16 @@
 #pragma once
 
-#include <string>
-#include <list>
-
 #include <prototypes.hpp>
+
+#include <list>
+#include <string>
 
 namespace gl
 {
 	/// <summary>
 	/// Represents any object in the scene
 	/// </summary>
-	class object
-		: public std::enable_shared_from_this<object>
+	class object : public std::enable_shared_from_this<object>
 	{
 	public:
 		using uid_t = std::string;
@@ -25,13 +24,14 @@ namespace gl
 		void remove_child(object_ptr child);
 
 		template <typename component_t>
-		std::enable_if<std::is_base_of<component, component_t>::value, std::shared_ptr<component_t>>::type add_component()
+		std::enable_if<std::is_base_of<component, component_t>::value, std::shared_ptr<component_t>>::type
+		add_component()
 		{
 			if (get_component<component_t>())
-			{
-				// Cannot have 2 components of the same type;
-				return nullptr;
-			}
+				{
+					// Cannot have 2 components of the same type;
+					return nullptr;
+				}
 
 			std::shared_ptr<component_t> c = std::make_shared<component_t>();
 			c->set_object(shared_from_this());
@@ -40,19 +40,20 @@ namespace gl
 		}
 
 		template <typename component_t>
-		std::enable_if<std::is_base_of<component, component_t>::value, std::shared_ptr<component_t>>::type get_component()
+		std::enable_if<std::is_base_of<component, component_t>::value, std::shared_ptr<component_t>>::type
+		get_component()
 		{
 			for (auto c : _components)
-			{
-				if (auto cmp = std::dynamic_pointer_cast<component_t>(c))
-					return cmp;
-			}
+				{
+					if (auto cmp = std::dynamic_pointer_cast<component_t>(c))
+						return cmp;
+				}
 
 			return nullptr;
 		}
 
-		void start();
-		void update();
+		void		start();
+		void		update();
 		object_wptr parent();
 
 #pragma region Lifecycle functions
@@ -75,10 +76,10 @@ namespace gl
 #pragma endregion
 
 	private:
-		std::list<object_ptr> _children;
+		std::list<object_ptr>	 _children;
 		std::list<component_ptr> _components;
-		object_wptr _parent;
-		uid_t _uid;
-		bool _is_parenting{ false };
+		object_wptr				 _parent;
+		uid_t					 _uid;
+		bool					 _is_parenting { false };
 	};
-}
+} // namespace gl

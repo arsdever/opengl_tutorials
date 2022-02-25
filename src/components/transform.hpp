@@ -5,8 +5,7 @@
 
 namespace gl
 {
-	class transform
-		: public component
+	class transform : public component
 	{
 	public:
 		transform();
@@ -34,4 +33,4 @@ namespace gl
 		glm::quat _rotation;
 		glm::vec3 _scale;
 	};
-}
+} // namespace gl
