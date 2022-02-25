@@ -32,6 +32,8 @@ namespace gl
 			return nullptr;
 		}
 
+		virtual void draw_helpers();
+
 	private:
 		object_wptr _object;
 	};

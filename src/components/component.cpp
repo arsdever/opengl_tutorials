@@ -20,4 +20,7 @@ namespace gl
 	{
 		return _object;
 	}
+
+	void component::draw_helpers()
+	{}
 }
