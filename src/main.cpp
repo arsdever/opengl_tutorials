@@ -13,11 +13,12 @@
 #include <components/mesh.hpp>
 #include <components/transform.hpp>
 #include <components/renderer.hpp>
+#include <components/texture2d.hpp>
 
 #include <components/sample_meshes/triangle_mesh.hpp>
 
-static constexpr int WIDTH = 640;
-static constexpr int HEIGHT = 480;
+static constexpr int WIDTH = 1024;
+static constexpr int HEIGHT = 768;
 
 gl::object_ptr create_camera_object()
 {
@@ -38,9 +39,11 @@ gl::object_ptr create_input_system_object(GLFWwindow* win)
 gl::object_ptr create_triangle_object()
 {
 	gl::object_ptr tri = std::make_shared<gl::object>();
+	gl::texture2d texture = gl::texture2d::from_file("./texture.jpg");
 	tri->add_component<gl::transform>();
 	tri->add_component<gl::triangle_mesh>();
 	tri->add_component<gl::renderer>();
+	tri->get_component<gl::renderer>()->set_main_texture(texture);
 	return tri;
 }
 

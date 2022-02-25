@@ -3,7 +3,7 @@
 #include <vector>
 
 #include <components/component.hpp>
-#include <vertex.h>
+#include <components/vertex/vertex.hpp>
 #include <shader_prog.h>
 
 namespace gl
