@@ -4,9 +4,9 @@
 
 namespace gl
 {
-	class triangle_mesh : public mesh
-	{
-	public:
-		triangle_mesh();
-	};
+    class triangle_mesh : public mesh
+    {
+    public:
+        triangle_mesh();
+    };
 } // namespace gl

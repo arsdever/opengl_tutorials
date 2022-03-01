@@ -5,37 +5,46 @@
 
 namespace gl
 {
-	class camera : public component
-	{
-	public:
-		struct rect
-		{
-			rect(float _x, float _y, float _w, float _h) : x { _x }, y { _y }, w { _w }, h { _h } { }
+    class camera : public component
+    {
+    public:
+        struct rect
+        {
+            rect(float _x, float _y, float _w, float _h)
+                : x { _x }
+                , y { _y }
+                , w { _w }
+                , h { _h }
+            {
+            }
 
-			rect(const rect& o) : rect(o.x, o.y, o.w, o.h) { }
+            rect(const rect& o)
+                : rect(o.x, o.y, o.w, o.h)
+            {
+            }
 
-			float x { 0 };
-			float y { 0 };
-			float w { 0 };
-			float h { 0 };
-		};
+            float x { 0 };
+            float y { 0 };
+            float w { 0 };
+            float h { 0 };
+        };
 
-	public:
-		camera();
+    public:
+        camera();
 
-		virtual void update() override;
+        virtual void update() override;
 
-		void set_main();
+        void set_main();
 
-		void set_viewport(rect viewport);
-		rect viewport() const;
+        void set_viewport(rect viewport);
+        rect viewport() const;
 
-		glm::mat4 get_matrix() const;
-		glm::mat4 get_perspective() const;
+        glm::mat4 get_matrix() const;
+        glm::mat4 get_perspective() const;
 
-		void render();
+        void render();
 
-	private:
-		rect _viewport;
-	};
+    private:
+        rect _viewport;
+    };
 } // namespace gl

@@ -2,15 +2,15 @@
 
 namespace gl
 {
-	component::component() { }
+    component::component() { }
 
-	void component::start() { }
+    void component::start() { }
 
-	void component::update() { }
+    void component::update() { }
 
-	void component::set_object(object_wptr obj) { _object = obj; }
+    void component::set_object(object_wptr obj) { _object = obj; }
 
-	object_wptr component::object() const { return _object; }
+    object_wptr component::object() const { return _object; }
 
-	void component::draw_helpers() { }
+    void component::draw_helpers() { }
 } // namespace gl
