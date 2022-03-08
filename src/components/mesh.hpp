@@ -19,8 +19,12 @@ namespace gl
         virtual const std::vector<vertex>&       vertices() const;
         virtual const std::vector<unsigned int>& indices() const;
 
+        bool is_dirty() const;
+        void upload_data() const;
+
     protected:
         std::vector<vertex>       _vertices;
         std::vector<unsigned int> _indices;
+        mutable bool              _is_dirty { true };
     };
 } // namespace gl

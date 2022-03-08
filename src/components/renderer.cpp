@@ -4,11 +4,13 @@
 #include <components/camera.hpp>
 #include <components/mesh.hpp>
 #include <components/transform.hpp>
+#include <components/light.hpp>
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/euler_angles.hpp>
+#include <scene.hpp>
 
 namespace gl
 {
@@ -28,16 +30,8 @@ namespace gl
         std::shared_ptr<mesh> m = get_component<mesh>();
 
         glBindBuffer(GL_ARRAY_BUFFER, _vbo);
-        glBufferData(GL_ARRAY_BUFFER,
-                     m->vertices().size() * sizeof(vertex),
-                     static_cast<void*>(m->vertices().data()),
-                     GL_STATIC_DRAW);
-
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ebo);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-                     m->indices().size() * sizeof(unsigned long),
-                     static_cast<void*>(m->indices().data()),
-                     GL_STATIC_DRAW);
+        m->upload_data();
 
         glBindTexture(GL_TEXTURE_2D, _texture);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -66,11 +60,30 @@ namespace gl
         std::shared_ptr<mesh>      m = get_component<mesh>();
         std::shared_ptr<transform> t = get_component<transform>();
 
+        if (m->is_dirty())
+            m->upload_data();
+
         unsigned int transformLoc = glGetUniformLocation(_shader_prog.id(), "transform");
         glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(t->get_matrix()));
 
         unsigned int camera = glGetUniformLocation(_shader_prog.id(), "camera");
         glUniformMatrix4fv(camera, 1, GL_FALSE, glm::value_ptr(cam->get_matrix()));
+
+        for (auto const& obj : *scene::current_scene())
+        {
+            std::shared_ptr<light> l = obj->get_component<light>();
+            if (l)
+            {
+                unsigned int position = glGetUniformLocation(_shader_prog.id(), "_light[0].position");
+                unsigned int color = glGetUniformLocation(_shader_prog.id(), "_light[0].color");
+                unsigned int intencity = glGetUniformLocation(_shader_prog.id(), "_light[0].intencity");
+
+                std::shared_ptr<transform> lt = l->get_component<transform>();
+                glUniform3fv(position, 1, glm::value_ptr(cam->get_component<transform>()->position()));
+                glUniform4fv(color, 1, glm::value_ptr(l->color()));
+                glUniform1f(intencity, l->intencity());
+            }
+        }
 
         glBindTexture(GL_TEXTURE_2D, _texture);
 

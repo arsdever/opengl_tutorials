@@ -26,5 +26,6 @@ namespace gl
         std::unordered_map<std::string, std::function<void(const action_ctx&)>> _mapping;
         glm::vec<2, double>                                                     _mouse_coordinates;
         GLFWwindow*                                                             _window;
+        bool                                                                    _was_clicked { false };
     };
 } // namespace gl

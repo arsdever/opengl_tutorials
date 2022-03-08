@@ -10,11 +10,13 @@
 #include <GLFW/glfw3.h>
 // clang-format on
 
+#include <behaviors/rotate_around_center.hpp>
 #include <components/camera.hpp>
 #include <components/input_system.hpp>
+#include <components/light.hpp>
 #include <components/mesh.hpp>
 #include <components/renderer.hpp>
-#include <components/sample_meshes/triangle_mesh.hpp>
+#include <components/sample_meshes/stl_mesh.hpp>
 #include <components/texture2d.hpp>
 #include <components/transform.hpp>
 
@@ -27,6 +29,17 @@ gl::object_ptr create_camera_object()
     cam->add_component<gl::camera>();
     cam->add_component<gl::transform>();
     return cam;
+}
+
+gl::object_ptr create_light_object()
+{
+    gl::object_ptr l = std::make_shared<gl::object>();
+    l->add_component<gl::transform>();
+    l->add_component<gl::light>();
+    l->add_component<gl::rotate_around_center>();
+    l->get_component<gl::rotate_around_center>()->set_speed(1.f);
+    l->get_component<gl::light>()->set_color({ 1, 1, 1, 1 });
+    return l;
 }
 
 gl::object_ptr create_input_system_object(GLFWwindow* win)
@@ -42,9 +55,10 @@ gl::object_ptr create_triangle_object()
     gl::object_ptr tri     = std::make_shared<gl::object>();
     gl::texture2d  texture = gl::texture2d::from_file("./texture.jpg");
     tri->add_component<gl::transform>();
-    tri->add_component<gl::triangle_mesh>();
+    tri->add_component<gl::stl_mesh>();
     tri->add_component<gl::renderer>();
     tri->get_component<gl::renderer>()->set_main_texture(texture);
+    tri->get_component<gl::stl_mesh>()->load("./axe.stl");
     return tri;
 }
 
@@ -91,21 +105,41 @@ int main(int argc, char** argv)
     auto cam   = create_camera_object();
     auto tri   = create_triangle_object();
     auto input = create_input_system_object(window);
+    auto light = create_light_object();
 
     s->add_object(cam);
     s->add_object(tri);
     s->add_object(input);
+    s->add_object(light);
 
     gl::camera_ptr main_camera = cam->get_component<gl::camera>();
     main_camera->set_viewport(gl::camera::rect { 0, 0, WIDTH, HEIGHT });
     main_camera->set_main();
     main_camera->get_component<gl::transform>()->move(glm::vec3 { 0, 0, 3 });
 
-    input->get_component<gl::input_system>()->on_action("mouse:position", [ main_camera ](const gl::action_ctx& ctx) {
-        glm::vec2 pos = ctx.value<glm::vec2>();
-        main_camera->get_component<gl::transform>()->set_rotation(
-            glm::quat(glm::vec3 { -pos.y / 1000.0, -pos.x / 1000.0, 0 }));
-    });
+    bool      is_panning = false;
+    glm::vec2 position;
+    glm::quat rotation;
+
+    input->get_component<gl::input_system>()->on_action(
+        "mouse:position", [ &position, &rotation, &is_panning, main_camera ](const gl::action_ctx& ctx) {
+            if (!is_panning)
+                return;
+            glm::vec2 delta = ctx.value<glm::vec2>() - position;
+            main_camera->get_component<gl::transform>()->set_rotation(rotation);
+            main_camera->get_component<gl::transform>()->rotate(
+                glm::quat(glm::vec3 { -delta.y / 1000.0, -delta.x / 1000.0, 0 }));
+        });
+    input->get_component<gl::input_system>()->on_action(
+        "mouse:left_click", [ &position, &rotation, main_camera, &is_panning ](const gl::action_ctx& ctx) {
+            is_panning = true;
+            rotation   = main_camera->get_component<gl::transform>()->rotation();
+            position   = ctx.value<glm::vec2>();
+        });
+    input->get_component<gl::input_system>()->on_action(
+        "mouse:left_release", [ &position, &rotation, main_camera, &is_panning ](const gl::action_ctx& ctx) {
+            is_panning      = false;
+        });
     input->get_component<gl::input_system>()->on_action("keyboard:w", [ main_camera ](const gl::action_ctx& ctx) {
         gl::transform_ptr      tcam  = main_camera->get_component<gl::transform>();
         static constexpr float speed = 40;

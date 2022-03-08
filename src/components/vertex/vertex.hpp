@@ -3,6 +3,7 @@
 #include <array>
 
 #include <components/vertex/color.hpp>
+#include <components/vertex/normal.hpp>
 #include <components/vertex/position.hpp>
 #include <components/vertex/uv_coords.hpp>
 #include <glad/glad.h>
@@ -13,26 +14,29 @@ namespace gl
 {
     struct vertex
     {
-        vertex(position pos, color col, uv_coords uv)
+        vertex(position pos, color col, uv_coords uv, normal norm)
             : _position { pos }
             , _color { col }
             , _uv_coords { uv }
+            , _normal { norm }
         {
         }
 
         position  _position;
         color     _color;
         uv_coords _uv_coords;
+        normal    _normal;
 
         static void populate_attributes()
         {
             static int offset = 0;
             static int idx    = 0;
 
-            std::array<descriptor_t, 3> dsc {
+            std::array<descriptor_t, 4> dsc {
                 position::_descriptor,
                 color::_descriptor,
                 uv_coords::_descriptor,
+                normal::_descriptor,
             };
 
             unsigned tsize = 0;

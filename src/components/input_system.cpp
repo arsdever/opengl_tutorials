@@ -36,11 +36,23 @@ namespace gl
                         glfwGetCursorPos(_window, &x, &y);
                         return action_ctx { true, glm::vec2 { x, y } };
                     }
+                if (variable == "left_release")
+                    {
+                        int state = glfwGetMouseButton(_window, GLFW_MOUSE_BUTTON_LEFT);
+                        if (state == GLFW_RELEASE && _was_clicked)
+                            {
+                                _was_clicked = false;
+                                double x, y;
+                                glfwGetCursorPos(_window, &x, &y);
+                                return action_ctx { true, glm::vec2 { x, y } };
+                            }
+                    }
                 if (variable == "left_click")
                     {
                         int state = glfwGetMouseButton(_window, GLFW_MOUSE_BUTTON_LEFT);
-                        if (state == GLFW_PRESS)
+                        if (state == GLFW_PRESS && !_was_clicked)
                             {
+                                _was_clicked = true;
                                 double x, y;
                                 glfwGetCursorPos(_window, &x, &y);
                                 return action_ctx { true, glm::vec2 { x, y } };
