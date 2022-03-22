@@ -2,6 +2,9 @@ cmake_minimum_required (VERSION 3.13)
 
 set (CMAKE_CXX_STANDARD 20)
 
+add_subdirectory (events)
+add_subdirectory (prof)
+
 option (OPENGL_ENABLE_TESTING "Enable the testing of the project" ON)
 project (opengl_trainings)
 
