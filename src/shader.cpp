@@ -1,4 +1,5 @@
 #include <iostream>
+#include <profiler.hpp>
 
 #include "shader.h"
 
@@ -7,6 +8,7 @@
 
 shader shader::from_file(const std::filesystem::path& path)
 {
+    auto   p = prof::profiler::profile(__func__);
     shader s;
 
     std::string ext = path.extension().string();

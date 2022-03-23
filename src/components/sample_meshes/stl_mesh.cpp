@@ -1,5 +1,6 @@
 #include <filesystem>
 #include <fstream>
+#include <profiler.hpp>
 #include <stl.hpp>
 
 #include "stl_mesh.hpp"
@@ -10,6 +11,8 @@ namespace gl
 
     void stl_mesh::load(std::filesystem::path const& path)
     {
+        auto scoped_profiler_instance =
+            prof::profiler::profile(std::string { "stl_mesh::" } + object().lock()->id() + "::" + __func__);
         std::ifstream        reader(path, std::ios::binary);
         std::vector<uint8_t> buffer { std::istreambuf_iterator { reader }, {} };
         gl::stl              stl { buffer.data() };

@@ -16,17 +16,19 @@ namespace utils
 
     inline std::string generate_uid()
     {
+        static constexpr size_t id_length = 8;
         std::string result;
-        result.resize(64);
-        static constexpr char symbols[] = "1234567890qwertyuiopasdfghjklzxcvnmQWERTYUIOPASDFGHJKLZXCVBNM";
+        result.resize(id_length);
+        static constexpr char symbols[] = "1234567890qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM";
 
         std::random_device                 r;
         std::default_random_engine         e1(r());
-        std::uniform_int_distribution<int> uniform_dist(0, sizeof(symbols) - 1); // decrease to ignore null terminator
+        std::uniform_int_distribution<int> uniform_dist(0, sizeof(symbols) - 2); // decrease to ignore null terminator
 
-        for (int i = 0; i < 64; ++i)
+        for (int i = 0; i < id_length; ++i)
             {
-                result[ i ] = symbols[ uniform_dist(e1) ];
+                size_t idx  = uniform_dist(e1);
+                result[ i ] = char(symbols[ idx ]);
             }
 
         return result;

@@ -1,4 +1,5 @@
 #include <object.hpp>
+#include <profiler.hpp>
 #include <scene.hpp>
 
 #include "camera.hpp"
@@ -29,11 +30,15 @@ namespace gl
 
     glm::mat4 camera::get_perspective() const
     {
+        auto scoped_profiler_instance =
+            prof::profiler::profile(std::string { "camera::" } + object().lock()->id() + "::" + __func__);
         return glm::perspective<double>(120.0, _viewport.w / _viewport.h, 0.001f, 300.0);
     }
 
     glm::mat4 camera::get_matrix() const
     {
+        auto scoped_profiler_instance =
+            prof::profiler::profile(std::string { "camera::" } + object().lock()->id() + "::" + __func__);
         std::shared_ptr<transform> t = get_component<transform>();
 
         return get_perspective() * glm::lookAt(t->position(),
@@ -43,6 +48,8 @@ namespace gl
 
     void camera::render()
     {
+        auto scoped_profiler_instance =
+            prof::profiler::profile(std::string { "camera::" } + object().lock()->id() + "::" + __func__);
         glViewport(_viewport.x, _viewport.y, _viewport.w, _viewport.h);
         glClearColor(0.f, 0.f, 0.f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

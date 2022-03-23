@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <iostream>
+#include <profiler.hpp>
 #include <scene.hpp>
 
 #include "input_system.hpp"
@@ -14,6 +15,8 @@ namespace gl
 
     void input_system::update()
     {
+        auto scoped_profiler_instance =
+            prof::profiler::profile(std::string { "input_system::" } + object().lock()->id() + "::" + __func__);
         for (auto action : _mapping)
             {
                 if (action_ctx context = check_action(action.first))
@@ -23,6 +26,8 @@ namespace gl
 
     action_ctx input_system::check_action(std::string action)
     {
+        auto scoped_profiler_instance =
+            prof::profiler::profile(std::string { "input_system::" } + object().lock()->id() + "::" + __func__);
         std::for_each(action.begin(), action.end(), [](auto& ch) { ch = tolower(ch); });
         auto        sep_pos  = action.find_first_of(":");
         std::string device   = action.substr(0, sep_pos);
@@ -82,6 +87,8 @@ namespace gl
 
     void input_system::on_action(const std::string& action, std::function<void(const action_ctx&)> cb)
     {
+        auto scoped_profiler_instance =
+            prof::profiler::profile(std::string { "input_system::" } + object().lock()->id() + "::" + __func__);
         _mapping.insert({ action, cb });
     }
 } // namespace gl

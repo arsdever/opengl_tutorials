@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <profiler.hpp>
 
 #include <components/vertex/color.hpp>
 #include <components/vertex/normal.hpp>
@@ -29,8 +30,9 @@ namespace gl
 
         static void populate_attributes()
         {
-            static int offset = 0;
-            static int idx    = 0;
+            auto       scoped_profiler_instance = prof::profiler::profile(__func__);
+            static int offset                   = 0;
+            static int idx                      = 0;
 
             std::array<descriptor_t, 4> dsc {
                 position::_descriptor,

@@ -54,6 +54,7 @@ namespace gl
 
         void        start();
         void        update();
+        uid_t       id() const;
         object_wptr parent();
 
 #pragma region Lifecycle functions
