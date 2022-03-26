@@ -74,6 +74,8 @@ namespace gl
             }
     }
 
+    void object::set_name(std::string_view name) { _uid = name; }
+
     object::uid_t object::id() const { return _uid; }
 
     object_wptr object::parent() { return _parent; }

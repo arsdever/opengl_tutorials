@@ -13,7 +13,7 @@ namespace gl
 
     texture2d texture2d::from_file(const std::filesystem::path& filepath)
     {
-        auto          p = prof::profiler::profile(std::string { "texture2d::" } + __func__);
+        auto          p = prof::profiler::profile(__func__);
         std::ifstream reader(filepath, std::ios::binary);
         if (!reader)
             {

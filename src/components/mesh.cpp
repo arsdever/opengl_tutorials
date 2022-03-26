@@ -18,8 +18,7 @@ namespace gl
 
     void mesh::upload_data() const
     {
-        auto scoped_profiler_instance =
-            prof::profiler::profile(std::string { "mesh::" } + object().lock()->id() + "::" + __func__);
+        auto scoped_profiler_instance = prof::profiler::profile(object().lock()->id() + "::" + __func__);
         glBufferData(GL_ARRAY_BUFFER,
                      vertices().size() * sizeof(vertex),
                      static_cast<const void*>(vertices().data()),

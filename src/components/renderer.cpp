@@ -18,8 +18,7 @@ namespace gl
 {
     void renderer::start()
     {
-        auto scoped_profiler_instance =
-            prof::profiler::profile(std::string { "renderer::" } + object().lock()->id() + "::" + __func__);
+        auto scoped_profiler_instance = prof::profiler::profile(object().lock()->id() + "::" + __func__);
         glGenBuffers(1, &_vbo);
         glGenBuffers(1, &_ebo);
         glGenVertexArrays(1, &_vao);
@@ -58,8 +57,7 @@ namespace gl
 
     void renderer::render(std::shared_ptr<camera> cam)
     {
-        auto scoped_profiler_instance =
-            prof::profiler::profile(std::string { "renderer::" } + object().lock()->id() + "::" + __func__);
+        auto scoped_profiler_instance = prof::profiler::profile(object().lock()->id() + "::" + __func__);
         glBindVertexArray(_vao);
         _shader_prog.use();
 

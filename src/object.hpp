@@ -3,6 +3,7 @@
 #include <prototypes.hpp>
 
 #include <list>
+#include <profiler.hpp>
 #include <string>
 
 namespace gl
@@ -27,6 +28,7 @@ namespace gl
         std::enable_if<std::is_base_of<component, component_t>::value, std::shared_ptr<component_t>>::type
         add_component()
         {
+            auto scoped_profiler_instance = prof::profiler::profile(id() + "::" + __func__);
             if (get_component<component_t>())
                 {
                     // Cannot have 2 components of the same type;
@@ -43,6 +45,7 @@ namespace gl
         std::enable_if<std::is_base_of<component, component_t>::value, std::shared_ptr<component_t>>::type
         get_component()
         {
+            auto scoped_profiler_instance = prof::profiler::profile(id() + "::" + __func__);
             for (auto c : _components)
                 {
                     if (auto cmp = std::dynamic_pointer_cast<component_t>(c))
@@ -54,6 +57,7 @@ namespace gl
 
         void        start();
         void        update();
+        void        set_name(std::string_view name);
         uid_t       id() const;
         object_wptr parent();
 
