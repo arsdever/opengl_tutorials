@@ -9,6 +9,11 @@ namespace gl
 {
     using namespace vertex_attributes;
 
+    stl_mesh::stl_mesh(object_wptr o)
+        : mesh { o }
+    {
+    }
+
     void stl_mesh::load(std::filesystem::path const& path)
     {
         auto          scoped_profiler_instance = prof::profiler::profile(object().lock()->id() + "::" + __func__);
@@ -39,6 +44,6 @@ namespace gl
                 _indices.push_back(index++);
             }
 
-        _is_dirty = true;
+        upload_data();
     }
 } // namespace gl

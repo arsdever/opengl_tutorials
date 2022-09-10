@@ -31,8 +31,8 @@ gl::object_ptr create_camera_object()
     auto           scoped_profiler_instance = prof::profiler::profile(__func__);
     gl::object_ptr cam                      = std::make_shared<gl::object>();
     cam->set_name("camera01");
-    cam->add_component<gl::camera>();
-    cam->add_component<gl::transform>();
+    cam->add_component<gl::camera>(cam);
+    cam->add_component<gl::transform>(cam);
     return cam;
 }
 
@@ -41,9 +41,9 @@ gl::object_ptr create_light_object()
     auto           scoped_profiler_instance = prof::profiler::profile(__func__);
     gl::object_ptr l                        = std::make_shared<gl::object>();
     l->set_name("light01");
-    l->add_component<gl::transform>();
-    l->add_component<gl::light>();
-    l->add_component<gl::rotate_around_center>();
+    l->add_component<gl::transform>(l);
+    l->add_component<gl::light>(l);
+    l->add_component<gl::rotate_around_center>(l);
     l->get_component<gl::rotate_around_center>()->set_speed(1.f);
     l->get_component<gl::light>()->set_color({ 1, 1, 1, 1 });
     return l;
@@ -54,7 +54,7 @@ gl::object_ptr create_input_system_object(GLFWwindow* win)
     auto           scoped_profiler_instance = prof::profiler::profile(__func__);
     gl::object_ptr is                       = std::make_shared<gl::object>();
     is->set_name("input_system01");
-    is->add_component<gl::input_system>();
+    is->add_component<gl::input_system>(is);
     is->get_component<gl::input_system>()->set_window(win);
     return is;
 }
@@ -65,9 +65,9 @@ gl::object_ptr create_mesh_object()
     gl::object_ptr msh                      = std::make_shared<gl::object>();
     gl::texture2d  texture                  = gl::texture2d::from_file("./texture.jpg");
     msh->set_name("mesh01");
-    msh->add_component<gl::transform>();
-    msh->add_component<gl::stl_mesh>();
-    msh->add_component<gl::renderer>();
+    msh->add_component<gl::transform>(msh);
+    msh->add_component<gl::stl_mesh>(msh);
+    msh->add_component<gl::renderer>(msh);
     msh->get_component<gl::renderer>()->set_main_texture(texture);
     msh->get_component<gl::stl_mesh>()->load("./axe.stl");
     return msh;

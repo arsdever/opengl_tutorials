@@ -30,7 +30,7 @@ namespace gl
         };
 
     public:
-        camera();
+        camera(object_wptr o);
 
         virtual void update() override;
 

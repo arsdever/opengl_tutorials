@@ -12,8 +12,9 @@
 
 namespace gl
 {
-    camera::camera()
-        : _viewport(0, 0, 0, 0)
+    camera::camera(object_wptr o)
+        : component { o }
+        , _viewport(0, 0, 0, 0)
     {
     }
 

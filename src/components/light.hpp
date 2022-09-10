@@ -8,6 +8,7 @@ namespace gl
     class light : public component
     {
     public:
+        light(object_wptr o);
         glm::vec4 color() const;
         float     intencity() const;
 

@@ -7,6 +7,11 @@
 
 namespace gl
 {
+    rotate_around_center::rotate_around_center(object_wptr o)
+        : component(o)
+    {
+    }
+
     void rotate_around_center::set_speed(float v) { _speed = v; }
 
     void rotate_around_center::update()

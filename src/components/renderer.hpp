@@ -12,6 +12,7 @@ namespace gl
     class renderer : public component
     {
     public:
+        renderer(object_wptr o);
         virtual void start() override;
 
         void render(std::shared_ptr<camera> cam);
@@ -20,9 +21,6 @@ namespace gl
         void      set_main_texture(const texture2d& texture);
 
     private:
-        unsigned int _vbo;
-        unsigned int _vao;
-        unsigned int _ebo;
         unsigned int _texture;
         shader_prog  _shader_prog;
         texture2d    _main_texture;

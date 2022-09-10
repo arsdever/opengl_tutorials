@@ -8,7 +8,7 @@ namespace gl
     class transform : public component
     {
     public:
-        transform();
+        transform(object_wptr o);
 
         void set_position(glm::vec3 position);
         void set_rotation(glm::quat rotation);

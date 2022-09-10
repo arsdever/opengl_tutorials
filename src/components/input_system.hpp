@@ -14,6 +14,7 @@ namespace gl
     class input_system : public component
     {
     public:
+    input_system(object_wptr o);
         void set_window(GLFWwindow* wind);
 
         virtual void start();

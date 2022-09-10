@@ -4,7 +4,23 @@
 
 namespace gl
 {
-    mesh::mesh() { }
+    mesh::mesh(object_wptr o)
+        : component(o)
+    {
+        glGenBuffers(1, &_vbo);
+        glGenBuffers(1, &_ebo);
+        glGenVertexArrays(1, &_vao);
+
+        glBindVertexArray(_vao);
+
+        std::shared_ptr<mesh> m = get_component<mesh>();
+
+        glBindBuffer(GL_ARRAY_BUFFER, _vbo);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ebo);
+        upload_data();
+
+        glBindVertexArray(0);
+    }
 
     std::vector<vertex>& mesh::vertices() { return _vertices; }
 
@@ -18,6 +34,8 @@ namespace gl
 
     void mesh::upload_data() const
     {
+        glBindVertexArray(_vao);
+
         auto scoped_profiler_instance = prof::profiler::profile(object().lock()->id() + "::" + __func__);
         glBufferData(GL_ARRAY_BUFFER,
                      vertices().size() * sizeof(vertex),
@@ -28,6 +46,9 @@ namespace gl
                      indices().size() * sizeof(unsigned long),
                      static_cast<const void*>(indices().data()),
                      GL_STATIC_DRAW);
-        _is_dirty = false;
+
+        glBindVertexArray(0);
     }
+
+    unsigned int mesh::buffer_array() const { return _vao; }
 } // namespace gl

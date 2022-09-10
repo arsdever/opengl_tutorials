@@ -26,7 +26,7 @@ namespace gl
 
         template <typename component_t>
         typename std::enable_if<std::is_base_of<component, component_t>::value, std::shared_ptr<component_t>>::type
-        add_component()
+        add_component(object_wptr o)
         {
             auto scoped_profiler_instance = prof::profiler::profile(id() + "::" + __func__);
             if (get_component<component_t>())
@@ -35,7 +35,7 @@ namespace gl
                     return nullptr;
                 }
 
-            std::shared_ptr<component_t> c = std::make_shared<component_t>();
+            std::shared_ptr<component_t> c = std::make_shared<component_t>(o);
             c->set_object(shared_from_this());
             _components.push_back(c);
             return c;

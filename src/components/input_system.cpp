@@ -9,6 +9,11 @@
 
 namespace gl
 {
+    input_system::input_system(object_wptr o)
+        : component { o }
+    {
+    }
+
     void input_system::set_window(GLFWwindow* wind) { _window = wind; }
 
     void input_system::start() { }

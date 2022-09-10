@@ -9,7 +9,7 @@ namespace gl
     class component : public std::enable_shared_from_this<component>
     {
     public:
-        component();
+        component(object_wptr obj);
         virtual ~component() = default;
 
         void        set_object(object_wptr obj);

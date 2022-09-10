@@ -4,8 +4,9 @@
 
 namespace gl
 {
-    transform::transform()
-        : _position {}
+    transform::transform(object_wptr o)
+        : component { o }
+        , _position {}
         , _rotation {}
         , _scale { 1 }
     {

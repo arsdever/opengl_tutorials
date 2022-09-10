@@ -2,6 +2,11 @@
 
 namespace gl
 {
+    light::light(object_wptr o)
+        : component { o }
+    {
+    }
+
     glm::vec4 light::color() const { return _color; }
 
     float light::intencity() const { return _intencity; }

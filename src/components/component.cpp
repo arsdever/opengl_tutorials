@@ -2,7 +2,10 @@
 
 namespace gl
 {
-    component::component() { }
+    component::component(object_wptr obj)
+        : _object { obj }
+    {
+    }
 
     void component::start() { }
 

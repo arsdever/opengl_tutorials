@@ -6,7 +6,8 @@ namespace gl
 {
     using namespace vertex_attributes;
 
-    triangle_mesh::triangle_mesh()
+    triangle_mesh::triangle_mesh(object_wptr o)
+        : mesh { o }
     {
         auto scoped_profiler_instance = prof::profiler::profile(object().lock()->id() + "::" + __func__);
         _vertices.reserve(3);
@@ -21,5 +22,6 @@ namespace gl
         _indices.push_back(0);
         _indices.push_back(1);
         _indices.push_back(2);
+        upload_data();
     }
 } // namespace gl

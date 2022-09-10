@@ -16,25 +16,22 @@
 
 namespace gl
 {
+    renderer::renderer(object_wptr o)
+        : component { o }
+    {
+    }
+
     void renderer::start()
     {
         auto scoped_profiler_instance = prof::profiler::profile(object().lock()->id() + "::" + __func__);
-        glGenBuffers(1, &_vbo);
-        glGenBuffers(1, &_ebo);
-        glGenVertexArrays(1, &_vao);
         glGenTextures(1, &_texture);
 
         _shader_prog.load_shader("src/shader/vertex.vert");
         _shader_prog.load_shader("src/shader/fragment.frag");
         _shader_prog.link();
 
-        glBindVertexArray(_vao);
-
         std::shared_ptr<mesh> m = get_component<mesh>();
-
-        glBindBuffer(GL_ARRAY_BUFFER, _vbo);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ebo);
-        m->upload_data();
+        glBindVertexArray(m->buffer_array());
 
         glBindTexture(GL_TEXTURE_2D, _texture);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -58,14 +55,12 @@ namespace gl
     void renderer::render(std::shared_ptr<camera> cam)
     {
         auto scoped_profiler_instance = prof::profiler::profile(object().lock()->id() + "::" + __func__);
-        glBindVertexArray(_vao);
-        _shader_prog.use();
 
         std::shared_ptr<mesh>      m = get_component<mesh>();
         std::shared_ptr<transform> t = get_component<transform>();
 
-        if (m->is_dirty())
-            m->upload_data();
+        glBindVertexArray(m->buffer_array());
+        _shader_prog.use();
 
         unsigned int transformLoc = glGetUniformLocation(_shader_prog.id(), "transform");
         glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(t->get_matrix()));
