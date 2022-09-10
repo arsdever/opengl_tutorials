@@ -1,6 +1,8 @@
 [submodule "events"]
 	path = events
 	url = https://github.com/arsdever/events
+	branch = main
 [submodule "prof"]
 	path = prof
 	url = https://github.com/arsdever/prof
+	branch = main

@@ -19,7 +19,7 @@ namespace gl
         virtual void update();
 
         template <typename component_t>
-        std::enable_if<std::is_base_of<component, component_t>::value, std::shared_ptr<component_t>>::type
+        typename std::enable_if<std::is_base_of<component, component_t>::value, std::shared_ptr<component_t>>::type
         get_component() const
         {
             if (auto o = _object.lock())

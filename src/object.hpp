@@ -25,7 +25,7 @@ namespace gl
         void remove_child(object_ptr child);
 
         template <typename component_t>
-        std::enable_if<std::is_base_of<component, component_t>::value, std::shared_ptr<component_t>>::type
+        typename std::enable_if<std::is_base_of<component, component_t>::value, std::shared_ptr<component_t>>::type
         add_component()
         {
             auto scoped_profiler_instance = prof::profiler::profile(id() + "::" + __func__);
@@ -42,7 +42,7 @@ namespace gl
         }
 
         template <typename component_t>
-        std::enable_if<std::is_base_of<component, component_t>::value, std::shared_ptr<component_t>>::type
+        typename std::enable_if<std::is_base_of<component, component_t>::value, std::shared_ptr<component_t>>::type
         get_component()
         {
             auto scoped_profiler_instance = prof::profiler::profile(id() + "::" + __func__);

@@ -1,7 +1,6 @@
 find_package(OpenGL REQUIRED)
 find_package(glfw3 CONFIG REQUIRED)
 find_package(glad CONFIG REQUIRED)
-find_package(GLUT REQUIRED)
 find_package(glm REQUIRED)
 find_package(libjpeg-turbo REQUIRED)
 
@@ -68,5 +67,5 @@ add_executable (glapp
 )
 set_property (TARGET glapp PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "$<TARGET_FILE_DIR:glapp>")
 
-target_link_libraries (glapp PUBLIC ${OpenGL_LIBRARIES} glfw glad::glad GLUT::GLUT libjpeg-turbo::turbojpeg profiler)
+target_link_libraries (glapp PUBLIC ${OpenGL_LIBRARIES} glfw glad::glad libjpeg-turbo::turbojpeg profiler)
 target_include_directories (glapp PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${JPEG_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/prof/src)
