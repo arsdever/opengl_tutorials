@@ -7,7 +7,7 @@ namespace gl
     transform::transform(object_wptr o)
         : component { o }
         , _position {}
-        , _rotation {}
+        , _rotation { 0, 0, 0, 1 }
         , _scale { 1 }
     {
     }

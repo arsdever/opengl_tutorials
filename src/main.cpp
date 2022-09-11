@@ -139,10 +139,14 @@ int main(int argc, char** argv)
             "mouse:position", [ &position, &rotation, &is_panning, main_camera ](const gl::action_ctx& ctx) {
                 if (!is_panning)
                     return;
-                glm::vec2 delta = ctx.value<glm::vec2>() - position;
-                main_camera->get_component<gl::transform>()->set_rotation(rotation);
-                main_camera->get_component<gl::transform>()->rotate(
-                    glm::quat(glm::vec3 { -delta.y / 1000.0, -delta.x / 1000.0, 0 }));
+                glm::vec2 delta           = ctx.value<glm::vec2>() - position;
+                auto      q               = glm::quat(glm::vec3 { -delta.y / 1000.0, -delta.x / 1000.0, 0 });
+                auto      target_rotation = rotation * q;
+                auto      r               = main_camera->get_component<gl::transform>()->rotation();
+                r += (target_rotation - r) / 3.0f;
+                main_camera->get_component<gl::transform>()->set_rotation(r);
+
+                auto rotation = main_camera->get_component<gl::transform>()->rotation();
             });
         input->get_component<gl::input_system>()->on_action(
             "mouse:left_click", [ &position, &rotation, main_camera, &is_panning ](const gl::action_ctx& ctx) {
